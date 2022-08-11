@@ -1,5 +1,7 @@
+from dataclasses import fields
 from django import forms
 from . models import User
+from vendor.models import Vendor
 
 
 class UserForm(forms.ModelForm):
@@ -20,3 +22,8 @@ class UserForm(forms.ModelForm):
             raise forms.ValidationError(
                 'Password does not match!'
             )
+
+class VendorForm(forms.ModelForm):
+    class Meta:
+        model = Vendor
+        fields = ['vendor_name', 'vendor_license']
