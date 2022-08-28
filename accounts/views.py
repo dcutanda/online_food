@@ -1,6 +1,7 @@
-from base64 import urlsafe_b64decode
+
 from django.contrib.auth.tokens import default_token_generator
 from django.shortcuts import redirect, render
+from django.utils.http import urlsafe_base64_decode
 
 from accounts.forms import UserForm, VendorForm
 from .models import User, UserProfile
@@ -9,6 +10,7 @@ from .utils import detectUser, send_verification_email
 from django.contrib.auth.decorators import login_required, user_passes_test
 
 from django.core.exceptions import PermissionDenied
+from vendor.models import Vendor
 
 # Create your views here.
 
@@ -29,7 +31,7 @@ def check_role_customer(user):
 def registerUser(request):
     if request.user.is_authenticated:
         messages.warning(request, 'You are already logged in! ')
-        return redirect('dashboard')
+        return redirect('myAccount')
 
     elif request.method == 'POST':
         form = UserForm(request.POST)
@@ -54,7 +56,7 @@ def registerUser(request):
             user.save()
 
             # Send verification email
-            mail_subject = 'Please activate your account'
+            mail_subject = 'Thank you for registering. Please activate your account'
             email_template = 'accounts/email/account_verification_email.html'
             send_verification_email(request, user, mail_subject, email_template)
             messages.success(request, 'Your account has been registered sucessfully!')
@@ -76,7 +78,7 @@ def registerUser(request):
 def registerVendor(request):
     if request.user.is_authenticated:
         messages.warning(request, 'You are already logged in! ')
-        return redirect('dashboard')
+        return redirect('myAccount')
 
     elif request.method == 'POST':
         form = UserForm(request.POST)
@@ -99,7 +101,7 @@ def registerVendor(request):
             vendor.save()
 
             # Send verification email
-            mail_subject = 'Please activate your account'
+            mail_subject = 'Thank you for registering. Please activate your account'
             email_template = 'accounts/email/account_verification_email.html'
             send_verification_email(request, user, mail_subject, email_template)
             messages.success(request, 'Your account has been registered sucessfully! Please wait for the approval.')
@@ -117,7 +119,7 @@ def registerVendor(request):
 
 def activate(request, uidb64, token):
     try:
-        uid = urlsafe_b64decode(uidb64).decode()
+        uid = urlsafe_base64_decode(uidb64).decode()
         user = User._default_manager.get(pk=uid)
 
     except(TypeError, ValueError, OverflowError, User.DoesNotExist):
@@ -136,7 +138,7 @@ def activate(request, uidb64, token):
 def login(request):
     if request.user.is_authenticated:
         messages.warning(request, 'You are already logged in!')
-        return redirect('dashboard')
+        return redirect('myAccount')
         
     elif request.method == 'POST':
         email = request.POST['email']
@@ -167,8 +169,13 @@ def myAccount(request):
 @login_required(login_url='login')
 @user_passes_test(check_role_vendor)
 def vendorDashboard(request):
-   
-    return render(request, 'accounts/vendordashboard.html')
+    
+    vendor = Vendor.objects.get(user=request.user)
+
+    context = {
+        'vendor': vendor
+    }
+    return render(request, 'accounts/vendordashboard.html', context)
 
 @login_required(login_url='login')
 @user_passes_test(check_role_customer)
