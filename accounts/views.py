@@ -3,7 +3,8 @@ from django.contrib.auth.tokens import default_token_generator
 from django.shortcuts import redirect, render
 from django.utils.http import urlsafe_base64_decode
 
-from accounts.forms import UserForm, VendorForm
+from vendor.forms import VendorForm
+from accounts.forms import UserForm
 from .models import User, UserProfile
 from django.contrib import messages, auth
 from .utils import detectUser, send_verification_email
