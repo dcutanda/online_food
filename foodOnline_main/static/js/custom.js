@@ -73,23 +73,75 @@ function onPlaceChanged (){
 }
 
 $(document).ready(function(){
+    // Add to cart
     $('.add_to_cart').on('click', function(e){
         e.preventDefault();
 
         food_id = $(this).attr('data-id');
         url = $(this).attr('data-url');
         
-        data = {
-            food_id: food_id,
-        }
+        // data = {
+        //     food_id: food_id,
+        // }
+        // food_id in data will be not necessary since food_id will be taken by url
         $.ajax({
             type: 'GET',
             url: url,
-            data: data,
+            // data: data,
             success: function(response){
                 // alert(response)
                 console.log(response)
+                if(response.status == 'login_required'){
+                    // console.log('raise the error mesage')
+                    swal(response.messages, '', 'info').then(function(){
+                        window.location = '/login';
+                    })
+                }else if(response.status == 'Failed'){
+                    swal(response.messages, 'error')
+                }else{
+                    $('#cart_counter').html(response.cart_counter['cart_count']);
+                    $('#qty-'+food_id).html(response.qty);
+                }
+                
             }
         })
     })
+
+    // place the cart item quantity on load
+    $('.item_qty').each(function(){
+        var the_id = $(this).attr('id')
+        var qty = $(this).attr('data-qty')
+        $('#'+the_id).html(qty)
+        // console.log(the_id)
+    })
+
+    // Decrease cart
+    $('.decrease_cart').on('click', function(e){
+        e.preventDefault();
+
+        food_id = $(this).attr('data-id');
+        url = $(this).attr('data-url');
+
+        $.ajax({
+            type: 'GET',
+            url: url,
+            success: function(response){
+                // alert(response)
+                // console.log(food_id)
+                if(response.status == 'login_required'){
+                    swal(response.messages, '','info').then(function(){
+                        window.location = '/login';
+                    })
+                }else if(response.status == 'Failed'){
+                    swal(response.messages, '', 'error')
+                }else{
+                    $('#cart_counter').html(response.cart_counter['cart_count']);
+                    $('#qty-'+food_id).html(response.qty);
+                }
+                
+            }
+        })
+    })
+
 });
+
