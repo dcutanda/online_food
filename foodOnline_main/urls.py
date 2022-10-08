@@ -19,6 +19,8 @@ from . import views
 from django.conf.urls.static import static
 from django.conf import settings
 
+from marketplace import views as MarketPlaceViews
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -26,5 +28,8 @@ urlpatterns = [
     path('', include('accounts.urls')),
 
     path('marketplace/', include('marketplace.urls')),
+
+    # Cart
+    path('cart/', MarketPlaceViews.cart, name='cart'),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

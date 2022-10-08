@@ -121,6 +121,7 @@ $(document).ready(function(){
 
         food_id = $(this).attr('data-id');
         url = $(this).attr('data-url');
+        cart_id = $(this).attr('id');
 
         $.ajax({
             type: 'GET',
@@ -137,11 +138,64 @@ $(document).ready(function(){
                 }else{
                     $('#cart_counter').html(response.cart_counter['cart_count']);
                     $('#qty-'+food_id).html(response.qty);
+
+                    if(window.location.pathname == '/cart/'){
+                        removeCartItem(response.qty, cart_id);
+                        checkEmptyCart();
+                    }
+                    
                 }
                 
             }
         })
     })
+
+    // Delete Cart
+    $('.delete_cart').on('click', function(e){
+        e.preventDefault();
+
+        // alert('testing');
+        // return false;
+
+        cart_id = $(this).attr('data-id');
+        url = $(this).attr('data-url');
+
+        $.ajax({
+            type: 'GET',
+            url: url,
+            success: function(response){
+                // alert(response)
+                // console.log(food_id)
+                if(response.status == 'Failed'){
+                    swal(response.messages, '', 'error')
+                }else{
+                    $('#cart_counter').html(response.cart_counter['cart_count']);
+                    swal(response.status, response.messages, 'success')
+
+                    removeCartItem(0, cart_id);
+                    checkEmptyCart();
+                }
+                
+            }
+        })
+    })
+
+    // Delete the cart element if the qty is 0
+    function removeCartItem(cartItemQty, cart_id){
+            if(cartItemQty <= 0){
+                // remove the cart item element
+                document.getElementById('cart-item-'+cart_id).remove()
+            }
+    }
+
+    // Check if the cart is empty then show in html page
+    function checkEmptyCart(){
+        // get the value of cart counter in the navbar cart icon and store in the variable
+        var cart_counter = document.getElementById('cart_counter').innerHTML
+        if(cart_counter == 0){
+            document.getElementById('empty-cart').style.display = 'block';
+        }
+    }
 
 });
 
