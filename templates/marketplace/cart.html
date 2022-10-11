@@ -33,6 +33,7 @@
                                                         <div class="text-holder">
                                                             <h6>{{item.fooditem}}</h6>
                                                             <span>{{item.fooditem.description}}</span>
+                                                            <a href="{% url 'vendor_detail' item.fooditem.vendor.vendor_slug %}" class="badge badge-warning">{{item.fooditem.vendor.vendor_name}}</a>
                                                         </div>
                                                         <div class="price-holder">
                                                             <span class="price">Php {{item.fooditem.price}}</span>
@@ -80,21 +81,21 @@
                                                     Subtotal
                                                     <span class="price float-right">
                                                     <span class="currency">Php</span>
-                                                    <span id="subtotal">0</span>
+                                                    <span id="subtotal">{{subtotal}}</span>
                                                     </span>
                                                 </li>
                                                 <li style="list-style-type: none;">
                                                     Tax
                                                     <span class="price float-right">
                                                     <span class="currency">Php</span>
-                                                    <span id="tax">0</span>
+                                                    <span id="tax">{{tax}}</span>
                                                     </span>
                                                 </li>
                                                 <li style="list-style-type: none; font-weight: 600;">
                                                     TOTAL
                                                     <span class="price float-right">
                                                     <span class="currency">Php</span>
-                                                    <span id="total">0</span>
+                                                    <span id="total">{{grand_total}}</span>
                                                     </span>
                                                 </li>
                                             </ul>
