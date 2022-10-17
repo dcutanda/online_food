@@ -9,6 +9,7 @@ from django.db.models import Prefetch
 
 from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 
 # Create your views here.
 
@@ -116,3 +117,25 @@ def delete_cart(request, cart_id):
                 return JsonResponse({'status': 'Failed', 'messages': 'This item does not exist'})
         else:
             return JsonResponse({'status': 'Failed', 'messages': 'Invalid Request'})
+
+def search(request):
+    address = request.GET['address']
+    latitude = request.GET['lat']
+    longitude = request.GET['lng']
+    radius = request.GET['radius']
+    keyword = request.GET['keyword']
+
+    # get vendor ids that has the food item the user is looking for
+    fetch_vendors_by_fooditems = FoodItem.objects.filter(food_title__icontains=keyword, is_available=True).values_list('vendor', flat=True)
+    # print(fetch_vendors_by_fooditems)
+    vendors = Vendor.objects.filter(Q(id__in=fetch_vendors_by_fooditems) | Q(vendor_name__icontains=keyword, is_approved=True, user__is_active=True))
+
+    # Basic search functionality
+    # vendors = Vendor.objects.filter(vendor_name__icontains=keyword, is_approved=True, user__is_active=True)
+    vendor_count = vendors.count()
+    
+    context = {
+        'vendors': vendors,
+        'vendor_count': vendor_count,
+    }
+    return render(request, 'marketplace/listings.html', context)
