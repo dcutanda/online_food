@@ -47,7 +47,12 @@
 														</h5>
 													</div>
                                                     <span>{{vendor.user_profile.address}}</span>
-				
+
+													<br>
+													{% if source_location and radius %}
+													
+													<span><small class="text-muted"><b>{{vendor.kms}} km</b> away from {{source_location}}</small></span>
+													{% endif %}
 												</div>
 												<div class="list-option">
 
