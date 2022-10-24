@@ -146,6 +146,7 @@ def search(request):
             # print(D(km=radius))
             for v in vendors:
                 v.kms = round(v.distance.km, 1) # distance was taken from annotate method
+        
         # Basic search functionality
         # vendors = Vendor.objects.filter(vendor_name__icontains=keyword, is_approved=True, user__is_active=True)
         vendor_count = vendors.count()
