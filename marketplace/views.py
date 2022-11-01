@@ -2,8 +2,9 @@
 from unicodedata import category
 from django.shortcuts import redirect, render, get_object_or_404
 from marketplace.models import Cart
-from vendor.models import Vendor
+from vendor.models import Vendor, OpeningHour
 from menu.models import Category, FoodItem
+from vendor.views import opening_hours
 from .context_processors import get_cart_count, get_cart_amounts
 
 from django.db.models import Prefetch
@@ -15,6 +16,8 @@ from django.db.models import Q
 from django.contrib.gis.geos import GEOSGeometry
 from django.contrib.gis.measure import D # ``D`` is a shortcut for ``Distance``
 from django.contrib.gis.db.models.functions import Distance
+
+from datetime import date, datetime
 
 # Create your views here.
 
@@ -29,7 +32,6 @@ def marketplace(request):
 
 def vendor_detail(request, vendor_slug):
     
-   
     vendor = get_object_or_404(Vendor, vendor_slug=vendor_slug)
 
     categories = Category.objects.filter(vendor=vendor).prefetch_related(
@@ -39,15 +41,40 @@ def vendor_detail(request, vendor_slug):
         )
     )
 
+    opening_hours = OpeningHour.objects.filter(vendor=vendor)
+
+    # Check current days opening hours
+    today_date = date.today()
+    today = today_date.isoweekday()
+    current_opening_hours = OpeningHour.objects.filter(vendor=vendor, day=today)
+    # print(current_opening_hours)
+    # now = datetime.now()
+    # current_time = now.strftime("%H:%M:%S")
+    # print(current_time)
+    # is_open = None
+    # for i in current_opening_hours:
+    #     start = str(datetime.strptime(i.from_hour, "%I:%M %p").time())
+    #     end = str(datetime.strptime(i.to_hour, "%I:%M %p").time())
+    #     # print(start, end)
+    #     if start > current_time and end < current_time:
+    #         is_open = True
+    #         break # this will prevent to continue the for loop
+    #     else:
+    #         is_open = False
+    # print(is_open)
+
     if request.user.is_authenticated:
-        cart_items = Cart.objects.filter(user=request.user)
+        cart_items = Cart.objects.filter(user=request.user).order_by('day', '-from_hour')
     else:
         cart_items = None
     
     context = {
         'vendor': vendor,
         'categories': categories,
-        'cart_items': cart_items
+        'cart_items': cart_items,
+        'opening_hours': opening_hours,
+        'current_opening_hours': current_opening_hours,
+        
     }
     return render(request, 'marketplace/vendor_detail.html', context)
 

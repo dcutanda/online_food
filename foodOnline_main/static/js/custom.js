@@ -260,7 +260,20 @@ $(document).ready(function(){
                     'csrfmiddlewaretoken': csrf_token,
                 },
                 success: function(response){
-                    console.log(response);
+                    // console.log(response);
+                    if(response.status == 'Success'){
+                        if(response.is_closed == 'Closed'){
+                            html = '<tr id="hour-'+response.id+'"><td><b>'+response.day+'</b></td><td>Closed</td><td><a href="#" class="remove_hour" data-url="/vendor/opening-hours/remove/'+response.id+'/">Remove</a></td></tr>';
+                        }else{
+                            html = '<tr id="hour-'+response.id+'"><td><b>'+response.day+'</b></td><td>'+response.from_hour+' - '+response.to_hour+'</td><td><a href="#" class="remove_hour" data-url="/vendor/opening-hours/remove/'+response.id+'/">Remove</a></td></tr>';
+                        }
+                        $('.opening_hours').append(html)
+                        document.getElementById('opening_hours').reset();
+                    }else{
+                        console.log(response.error);
+                        swal(response.message, '', "error")
+                    }               
+                    
                 }
             })
         }else{
@@ -268,7 +281,23 @@ $(document).ready(function(){
         }
     });
 
+    // Remove opening hour
+    $(document).on('click', '.remove_hour', function(e){
+        e.preventDefault();
+        url = $(this).attr('data-url');
+        // console.log(url)
 
+        $.ajax({
+            type: 'GET',
+            url: url,
+            success: function(response){
+                if(response.status == 'success'){
+                    // console.log(response)
+                    document.getElementById('hour-'+response.id).remove()
+                }
+            }
+        })
+    })
 
     // document ready close
 });
