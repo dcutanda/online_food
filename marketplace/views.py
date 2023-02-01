@@ -41,7 +41,7 @@ def vendor_detail(request, vendor_slug):
         )
     )
 
-    opening_hours = OpeningHour.objects.filter(vendor=vendor)
+    opening_hours = OpeningHour.objects.filter(vendor=vendor).order_by('day', '-from_hour')
 
     # Check current days opening hours
     today_date = date.today()
@@ -64,7 +64,7 @@ def vendor_detail(request, vendor_slug):
     # print(is_open)
 
     if request.user.is_authenticated:
-        cart_items = Cart.objects.filter(user=request.user).order_by('day', '-from_hour')
+        cart_items = Cart.objects.filter(user=request.user)
     else:
         cart_items = None
     
