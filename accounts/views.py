@@ -188,7 +188,7 @@ def custDashboard(request):
 
 def forgot_password(request):
     if request.method == 'POST':
-        email = request.method['email']
+        email = request.POST['email']
 
         if User.objects.filter(email__exact=email).exists():
             user = User.objects.get(email__exact=email)
@@ -209,7 +209,7 @@ def forgot_password(request):
 def reset_password_validate(request, uidb64, token):
     # validate the user by decoding the token and user pk
     try:
-        uid = urlsafe_b64decode(uidb64).decode()
+        uid = urlsafe_base64_decode(uidb64).decode()
         user = User._default_manager.get(pk=uid)
 
     except(TypeError, ValueError, OverflowError, User.DoesNotExist):

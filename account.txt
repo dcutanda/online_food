@@ -1,1 +1,9 @@
 pass: foodonline1
+
+username: test_customer
+email: ej.cutanda03@gmail.com
+pass: qwerty
+
+username: test_vendor
+email: testvendor821@gmail.com
+pass: asdfgh
