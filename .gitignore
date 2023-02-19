@@ -164,6 +164,8 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 
+test.py
+account.txt
 # PyCharm
 #  JetBrains specific template is maintained in a separate JetBrains.gitignore that can
 #  be found at https://github.com/github/gitignore/blob/main/Global/JetBrains.gitignore
@@ -172,5 +174,3 @@ cython_debug/
 #.idea/
 
 # End of https://www.toptal.com/developers/gitignore/api/django
-test.py
-account.txt
